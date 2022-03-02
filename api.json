@@ -761,7 +761,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/coding"
+                  "$ref": "#/components/schemas/coding1"
                 }
               }
             },
@@ -868,7 +868,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/coding2forPut"
+                  "$ref": "#/components/schemas/coding"
                 }
               }
             },
@@ -980,7 +980,7 @@
               "explode": false,
               "schema": {
                 "type": "integer",
-                "format": "int32"
+                "format": "uuid"
               }
             }
           ],
@@ -1081,17 +1081,18 @@
             {
               "name": "userID",
               "in": "query",
+              "description": "If user is accessing provide UserId",
               "required": false,
               "style": "form",
-              "explode": true,
+              "explode": false,
               "schema": {
-                "type": "boolean"
+                "type": "string"
               }
             }
           ],
           "responses": {
             "200": {
-              "description": "successful operation",
+              "description": "Successfully response/es retrived",
               "content": {
                 "application/json": {
                   "schema": {
@@ -1155,7 +1156,14 @@
           },
           "responses": {
             "201": {
-              "description": "successful operation"
+              "description": "Successfully Response Created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
             },
             "400": {
               "description": "Bad Request"
@@ -1267,11 +1275,15 @@
               "name": "type",
               "in": "query",
               "description": "Possible values are MCQ and Coding",
-              "required": false,
+              "required": true,
               "style": "form",
               "explode": true,
               "schema": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                  "MCQ",
+                  "Coding"
+                ]
               }
             }
           ],
@@ -1280,7 +1292,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/rid_question_body"
+                  "$ref": "#/components/schemas/quereq1"
                 }
               }
             },
@@ -1292,7 +1304,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/rid_question_body"
+                    "$ref": "#/components/schemas/rid_question_body1"
                   }
                 }
               }
@@ -1343,7 +1355,7 @@
           ],
           "responses": {
             "201": {
-              "description": "successful operation",
+              "description": "Successfully Submitted",
               "content": {
                 "application/json": {
                   "schema": {
@@ -1464,7 +1476,14 @@
           ],
           "responses": {
             "200": {
-              "description": "successful operation"
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
             },
             "400": {
               "description": "Bad Request"
@@ -1632,7 +1651,7 @@
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/"
+                    "$ref": "#/components/schemas/successfulCreationOutput"
                   }
                 }
               }
@@ -1736,11 +1755,11 @@
         "testcases": {
           "type": "object",
           "properties": {
-            "Id": {
+            "id": {
               "type": "integer"
             },
-            "Type": {
-              "type": "string"
+            "type": {
+                "type": "string"
             },
             "marks": {
               "type": "integer"
@@ -1754,42 +1773,23 @@
           }
         },
         "testcases1": {
-          "type": "object",
-          "properties": {
-            "Type": {
-              "type": "string"
-            },
-            "marks": {
-              "type": "integer"
-            },
-            "input": {
-              "type": "string"
-            },
-            "output": {
-              "type": "string"
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "integer"
+              },
+              "input": {
+                "type": "string"
+              },
+              "output": {
+                "type": "string"
+              }
             }
-          }
-        },
-        "testcases2forPut": {
-          "type": "object",
-          "properties": {
-            "Id": {
-              "type": "string"
-            },
-            "Type": {
-              "type": "string"
-            },
-            "marks": {
-              "type": "integer"
-            },
-            "input": {
-              "type": "string"
-            },
-            "output": {
-              "type": "string"
-            }
-          }
-        },
+          },
+         
         "codestubs": {
           "type": "object",
           "properties": {
@@ -1824,71 +1824,85 @@
               "type": "integer"
             },
             "choices": {
-              "type": "object",
-              "items": {
-                "type": "string"
-              }
+              "type": "string"
             }
           }
         },
         "mcq1": {
-          "type": "object",
-          "properties": {
-            "question": {
-              "type": "string"
-            },
-            "marks": {
-              "type": "integer"
-            },
-            "choices": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/choice1"
+            "type": "object",
+            "properties": {
+              "question": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "integer"
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/choice1"
+                }
+              },
+              "isRandomize": {
+                "type": "boolean"
               }
-            },
-            "isRandomize": {
-              "type": "boolean"
             }
-          }
-        },
-        "mcq2forPut": {
-          "type": "object",
-          "properties": {
-            "Id": {
-              "type": "string"
-            },
-            "Type": {
-              "type": "string"
-            },
-            "question": {
-              "type": "string"
-            },
-            "marks": {
-              "type": "integer"
-            },
-            "choices": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/choice1"
+          },
+          "mcq2forPut": {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "type": "string"
+              },
+              "Type": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "integer"
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/choice2"
+                }
+              },
+              "isRandomize": {
+                "type": "boolean"
               }
-            },
-            "isRandomize": {
-              "type": "boolean"
             }
-          }
-        },
-        "choice1": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "isCorrect": {
-              "type": "boolean"
+          },
+          "choice1": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "isCorrect": {
+                "type": "boolean"
+              }
             }
-          }
-        },
+          },
+          
+          "choice2": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "isCorrect": {
+                "type": "boolean"
+              },
+              "value": {
+                  "type" : "string"
+              }
+            }
+          },
+          
         "coding": {
           "type": "object",
           "properties": {
@@ -1920,65 +1934,35 @@
           }
         },
         "coding1": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "type": {
-              "type": "string"
-            },
-            "question": {
-              "type": "string"
-            },
-            "marks": {
-              "type": "integer"
-            },
-            "testcases": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/testcases1"
-              }
-            },
-            "codeStubs": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/codestubs"
-              }
-            }
-          }
-        },
-        "coding2forPut": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "type": {
-              "type": "string"
-            },
-            "question": {
-              "type": "string"
-            },
-            "marks": {
-              "type": "integer"
-            },
-            "testcases": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/testcases2forPut"
-              }
-            },
-            "codeStubs": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/codestubs"
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "marks": {
+                "type": "integer"
+              },
+              "testcases": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/testcases1"
+                }
+              },
+              "codeStubs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/codestubs"
+                }
               }
             }
-          }
-        },
+          },
         "questions": {
           "type": "object",
           "properties": {
@@ -2233,9 +2217,6 @@
             },
             "selectedChoice": {
               "type": "string"
-            },
-            "quizID": {
-              "type": "integer"
             }
           }
         },
@@ -2261,9 +2242,6 @@
             },
             "userID": {
               "type": "string"
-            },
-            "quizID": {
-              "type": "integer"
             }
           }
         },
@@ -2305,11 +2283,11 @@
             "username": {
               "type": "string"
             },
-            "tabChangeCount": {
-              "type": "integer"
-            },
             "response": {
               "$ref": "#/components/schemas/response"
+            },
+            "tabChangeCount": {
+              "type": "integer"
             },
             "evaluatedMarks": {
               "type": "integer"
@@ -2321,9 +2299,6 @@
             "submissionTime": {
               "type": "string",
               "format": "date-time"
-            },
-            "remainingDuration": {
-              "type": "integer"
             },
             "quizID": {
               "type": "integer"
@@ -2338,6 +2313,9 @@
             },
             "response": {
               "$ref": "#/components/schemas/response"
+            },
+            "remainingDuration": {
+              "type": "integer"
             }
           }
         },
@@ -2757,7 +2735,7 @@
             }
           }
         },
-        "rid_question_body": {
+        "rid_question_body1": {
           "oneOf": [
             {
               "$ref": "#/components/schemas/mcqresponse"
@@ -2766,6 +2744,53 @@
               "$ref": "#/components/schemas/codingresponse"
             }
           ]
+        },
+        "quereq1": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/mcqrequest1"
+            },
+            {
+              "$ref": "#/components/schemas/codingrequest1"
+            }
+          ]
+        },
+        "mcqrequest1": {
+          "type": "object",
+          "properties": {
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "userID": {
+              "type": "string"
+            },
+            "selectedChoice": {
+              "type": "string"
+            }
+          }
+        },
+        "codingrequest1": {
+          "type": "object",
+          "properties": {
+            "requestID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "code": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "userID": {
+              "type": "string"
+            }
+          }
         }
       },
       "securitySchemes": {
