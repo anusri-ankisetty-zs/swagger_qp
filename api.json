@@ -1,0 +1,2778 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Quizzing Pro",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "/"
+      }
+    ],
+    "tags": [
+      {
+        "name": "Admin",
+        "description": "Admin Profile Management"
+      },
+      {
+        "name": "User",
+        "description": "User Profile Management"
+      },
+      {
+        "name": "Quiz",
+        "description": "CRUD on Quizzes"
+      },
+      {
+        "name": "Question",
+        "description": "CRUD on Questions"
+      },
+      {
+        "name": "Quiz Question Mapping",
+        "description": "Mapping of questions to quiz"
+      },
+      {
+        "name": "Quiz Response",
+        "description": "Responses for quiz"
+      },
+      {
+        "name": "User Code Runs",
+        "description": "Code runs for questions"
+      },
+      {
+        "name": "User Video",
+        "description": "Live monitoring for quizzes using WebRTC and WebSockets"
+      }
+    ],
+    "paths": {
+      "/admin-auth": {
+        "post": {
+          "tags": [
+            "Admin"
+          ],
+          "summary": "Login for admin for a given accesscode",
+          "description": "Admin logins and builds admin profile and its token used to authorize",
+          "operationId": "AdminLogin",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userInput"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "Successfully Admin Lgged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/userOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/admin-logout": {
+        "post": {
+          "tags": [
+            "Admin"
+          ],
+          "summary": "Logout for admin",
+          "description": "Admin logging out.",
+          "operationId": "AdminLogout",
+          "responses": {
+            "201": {
+              "description": "Successfully Admin Logged out"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/login": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Login for Quiz Takers for a given accesscode",
+          "description": "Quiz Taker logins and builds user profile and its token is used to authorize",
+          "operationId": "QuizTakerLogin",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userInput"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "Successfully QuizTaker Logged in",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/userOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/logout": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Logout for QuizTakers",
+          "description": "QuizTaker Login gout",
+          "operationId": "QuizTakerLogout",
+          "responses": {
+            "201": {
+              "description": "Successfully QuizTaker Logged out"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/user": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Create a Public/Guest User for a given name",
+          "description": "User logins and an unique id is assigned",
+          "operationId": "GuestUserLogin",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/guestUserInput"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/guestUserOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz": {
+        "get": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Get all quizzes",
+          "description": "This end point fetches all the quizzes for the admin which also supports filters involving quiz type and status",
+          "operationId": "GetAllQuiz",
+          "parameters": [
+            {
+              "name": "type",
+              "in": "query",
+              "description": "Choose Public/Private",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "public",
+                  "private"
+                ]
+              }
+            },
+            {
+              "name": "status",
+              "in": "query",
+              "description": "Choose expired/ongoing/upcoming",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "expired",
+                  "ongoing",
+                  "upcoming"
+                ]
+              }
+            },
+            {
+              "name": "published",
+              "in": "query",
+              "description": "Choose published/Not Published",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "slug",
+              "in": "query",
+              "description": "Slug is a unique ID for quiz",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/allQuizOutput"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "404": {
+              "description": "Quizzes not found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Create quiz",
+          "description": "This end point creates a quiz",
+          "operationId": "CreateQuiz",
+          "requestBody": {
+            "description": "Quiz object that needs to be added while creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/quizInput"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/quiz/{id}": {
+        "get": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Get specific quiz",
+          "description": "This end point fetches a specific quiz based on quiz ID. This end point is used by both admin and website",
+          "operationId": "getQuizById",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/quizOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Quiz Not found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Update quiz",
+          "description": "This end point updates a specific quiz based on quiz ID",
+          "operationId": "updateQuiz",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Quiz object required for update",
+            "content": {
+              "applicaion/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/quizInput"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/quizUpdateOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Delete quiz",
+          "description": "This end point deletes a specific quiz based on quiz ID",
+          "operationId": "Delete Quiz",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "No content"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/quiz/{id}/info": {
+        "get": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Get quiz Info",
+          "description": "This end point fetches quiz meta data based on quiz ID",
+          "operationId": "getQuizInfoById",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/quizInfoOutput"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "404": {
+              "description": "Quiz Info Not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/users": {
+        "get": {
+          "tags": [
+            "Quiz"
+          ],
+          "summary": "Get users with details for quiz",
+          "description": "This end point fetches all the users along with a track of their key details attempting a specific quiz based on quiz ID and filters",
+          "operationId": "getQuizUsers",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "status",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "completed",
+                  "inprogress"
+                ]
+              }
+            },
+            {
+              "name": "email",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "offset",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "sortBy",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "startTime",
+                  "email"
+                ]
+              }
+            },
+            {
+              "name": "order",
+              "in": "query",
+              "description": "Sort order:\n * `asc` - Ascending\n * `desc` - Descending\n",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "asc",
+                  "desc"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/quizUsersOutput"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Quiz Users Not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/quiz/{id}/mcq": {
+        "post": {
+          "tags": [
+            "Question"
+          ],
+          "summary": "Create mcq question and link to quiz (Being redesigned)",
+          "description": "This end point creates a mcq question and links it to a particular quiz based on quiz ID",
+          "operationId": "CreateAndLinkMCQ",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "MCQ Question object that needs to be added while creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mcq1"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/coding": {
+        "post": {
+          "tags": [
+            "Question"
+          ],
+          "summary": "Create coding question and link to quiz (Being redesigned)",
+          "description": "This end point creates a coding question and links it to a particular quiz based on quiz ID",
+          "operationId": "CreateAndLinkCoding",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Coding Question object that needs to be added while creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/coding"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/mcq/{questionID}": {
+        "put": {
+          "tags": [
+            "Question"
+          ],
+          "summary": "Update MCQ question (Being redesigned)",
+          "description": "This end point updates a mcq question based on ID",
+          "operationId": "UpdateMCQQuestion",
+          "parameters": [
+            {
+              "name": "questionID",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "MCQ Question object that needs to be added while update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/mcq2forPut"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/coding/{questionID}": {
+        "put": {
+          "tags": [
+            "Question"
+          ],
+          "summary": "Update Coding question (Being redesigned)",
+          "description": "This end point updates a coding question based on ID",
+          "operationId": "UpdateCodingQuestion",
+          "parameters": [
+            {
+              "name": "questionID",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Coding Question object that needs to be added while update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/coding2forPut"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/upload-csv": {
+        "post": {
+          "tags": [
+            "Question"
+          ],
+          "summary": "Create a bulk of questions using CSV (Being redesigned)",
+          "description": "This end point creates a bulk of mcq questions using a CSV file and links them to a particular quiz based on quiz ID",
+          "operationId": "CreateAndLinkQuestionBulk",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Question object that needs to be added while creation",
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/id_uploadcsv_body"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/successfulCreationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/mcq/{questionID}": {
+        "delete": {
+          "tags": [
+            "Quiz Question Mapping"
+          ],
+          "summary": "Unlink mcq question (Being redesigned)",
+          "description": "This end point unlinks a mcq question to a quiz",
+          "operationId": "UnlinkMCQ",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "questionID",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "No content"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/coding/{questionID}": {
+        "delete": {
+          "tags": [
+            "Quiz Question Mapping"
+          ],
+          "summary": "Unlink coding question (Being redesigned)",
+          "description": "This end point unlinks a coding question from a quiz",
+          "operationId": "UnlinkCoding",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "questionID",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "No content"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/response": {
+        "get": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Get responses of quiz",
+          "description": "This end point can be used by admin and quiz taker. Admins will have access to all the responses where as quiz taker will have only access to his response",
+          "operationId": "GetAllResponses",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "submitted",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "boolean"
+              }
+            },
+            {
+              "name": "userID",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/userResponseOutput"
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Create response of quiz",
+          "description": "This end point creates a response for a quiz",
+          "operationId": "CreateResponse",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Response object that needs to be added while creation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userResponseInput"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "403": {
+              "description": "Response already exists - Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/response/{rid}": {
+        "get": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Get response of quiz",
+          "description": "This end point fetches specific user's evaluated response for a quiz based on id",
+          "operationId": "GetResponseByID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "rid",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/userResultOutput"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/quiz/{id}/response/{rid}/question": {
+        "post": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Submit question to response",
+          "description": "This end point submits a question to a response for a quiz",
+          "operationId": "SubmitQuestion",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "rid",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "type",
+              "in": "query",
+              "description": "Possible values are MCQ and Coding",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Response object that needs to be added during question submission. Possible objects are MCQ and Coding objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/rid_question_body"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "The response will be a MCQ model or Coding model depending on the request body",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/rid_question_body"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "403": {
+              "description": "Quiz already submitted - Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/response/{rid}/submit": {
+        "post": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Submit a quiz response",
+          "description": "This end point submits a quiz",
+          "operationId": "SubmitQuizResponse",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "rid",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/userResultOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "403": {
+              "description": "Quiz already submitted - Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/quiz/{id}/response/{rid}/evaluate": {
+        "put": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Evaluate response of quiz",
+          "description": "This end point evaluates specific response for a quiz based on id",
+          "operationId": "EvaluateResponse",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "rid",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/userResultOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "401": {
+              "description": "Access token is expired or non existing"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/quiz/{id}/response/{rid}/tab-change": {
+        "put": {
+          "tags": [
+            "Quiz Response"
+          ],
+          "summary": "Updates the tab change count",
+          "description": "This end point updates the tab change count",
+          "operationId": "UpdateTabCount",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "rid",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "403": {
+              "description": "Access Denied"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/code-run": {
+        "post": {
+          "tags": [
+            "User Code Runs"
+          ],
+          "summary": "Submit a code response",
+          "description": "This end point is for making a code compilation request",
+          "operationId": "CreateRequest",
+          "requestBody": {
+            "description": "Code Response object that needs to be added while quiz submission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/codingresponse"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/codeRunResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/code-run/{requestID}": {
+        "get": {
+          "tags": [
+            "User Code Runs"
+          ],
+          "summary": "Get compilation result",
+          "description": "This end point is for getting compilation results",
+          "operationId": "GetCompiledResult",
+          "parameters": [
+            {
+              "name": "requestID",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/compilationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "User Code Runs"
+          ],
+          "summary": "Update compilation status",
+          "description": "This end point is for getting compilation results and updating the request status",
+          "operationId": "UpdateRequestStatus",
+          "parameters": [
+            {
+              "name": "requestID",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/compilationOutput"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "404": {
+              "description": "Content Not Found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/user-stream-credentials": {
+        "get": {
+          "tags": [
+            "User Video"
+          ],
+          "summary": "Get user credentials",
+          "description": "This end point is for getting user credentials",
+          "operationId": "GetUserCreds",
+          "parameters": [
+            {
+              "name": "email",
+              "in": "query",
+              "required": true,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/admin-stream-credentials": {
+        "post": {
+          "tags": [
+            "User Video"
+          ],
+          "summary": "Post admin credentials",
+          "description": "This end point is for creating admin credentials specific to a candidate",
+          "operationId": "CreateAdminCreds",
+          "parameters": [
+            {
+              "name": "email",
+              "in": "query",
+              "required": true,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Object needed for creating admin credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/adminCreds"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "successful operation"
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/credential-exchange": {
+        "get": {
+          "tags": [
+            "User Video"
+          ],
+          "summary": "Get admin credentials",
+          "description": "This end point is for sending candidate and fetching admin credentials on the upgraded web socket connection",
+          "operationId": "ServeWS",
+          "parameters": [
+            {
+              "name": "email",
+              "in": "query",
+              "required": true,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "101": {
+              "description": "Upgraded protocol to Websocket and Successfully established Websocket connection",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/adminCreds"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "testcases": {
+          "type": "object",
+          "properties": {
+            "Id": {
+              "type": "integer"
+            },
+            "Type": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "input": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string"
+            }
+          }
+        },
+        "testcases1": {
+          "type": "object",
+          "properties": {
+            "Type": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "input": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string"
+            }
+          }
+        },
+        "testcases2forPut": {
+          "type": "object",
+          "properties": {
+            "Id": {
+              "type": "string"
+            },
+            "Type": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "input": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string"
+            }
+          }
+        },
+        "codestubs": {
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string"
+            },
+            "header": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string"
+            },
+            "footer": {
+              "type": "string"
+            }
+          }
+        },
+        "mcq": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "choices": {
+              "type": "object",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mcq1": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "choices": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/choice1"
+              }
+            },
+            "isRandomize": {
+              "type": "boolean"
+            }
+          }
+        },
+        "mcq2forPut": {
+          "type": "object",
+          "properties": {
+            "Id": {
+              "type": "string"
+            },
+            "Type": {
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "choices": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/choice1"
+              }
+            },
+            "isRandomize": {
+              "type": "boolean"
+            }
+          }
+        },
+        "choice1": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "isCorrect": {
+              "type": "boolean"
+            }
+          }
+        },
+        "coding": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "testcases": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/testcases"
+              }
+            },
+            "codeStubs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/codestubs"
+              }
+            }
+          }
+        },
+        "coding1": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "testcases": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/testcases1"
+              }
+            },
+            "codeStubs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/codestubs"
+              }
+            }
+          }
+        },
+        "coding2forPut": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "testcases": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/testcases2forPut"
+              }
+            },
+            "codeStubs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/codestubs"
+              }
+            }
+          }
+        },
+        "questions": {
+          "type": "object",
+          "properties": {
+            "mcq": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/mcq"
+              }
+            },
+            "coding": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/coding"
+              }
+            }
+          }
+        },
+        "activeTime": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "duration": {
+              "type": "integer"
+            }
+          }
+        },
+        "questionCount": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "integer"
+            },
+            "mcq": {
+              "type": "integer"
+            },
+            "coding": {
+              "type": "integer"
+            }
+          }
+        },
+        "quizInput": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "showResult": {
+              "type": "boolean"
+            },
+            "isPublished": {
+              "type": "boolean"
+            },
+            "isRandomize": {
+              "type": "boolean"
+            },
+            "isProctored": {
+              "type": "boolean"
+            },
+            "invitees": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "activeTime": {
+              "$ref": "#/components/schemas/activeTime"
+            }
+          }
+        },
+        "allQuizOutput": {
+          "type": "object",
+          "properties": {
+            "activeCount": {
+              "type": "integer"
+            },
+            "expiredCount": {
+              "type": "integer"
+            },
+            "upcomingCount": {
+              "type": "integer"
+            },
+            "totalCount": {
+              "type": "integer"
+            },
+            "quizList": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/quizInfoOutput"
+              }
+            }
+          }
+        },
+        "successfulCreationOutput": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "integer"
+            }
+          }
+        },
+        "quizInfoOutput": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "isPublished": {
+              "type": "boolean"
+            },
+            "isProctored": {
+              "type": "boolean"
+            },
+            "activeTime": {
+              "$ref": "#/components/schemas/activeTime"
+            },
+            "questionCount": {
+              "$ref": "#/components/schemas/questionCount"
+            }
+          }
+        },
+        "quizOutput": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "questions": {
+              "$ref": "#/components/schemas/questions"
+            },
+            "type": {
+              "type": "string"
+            },
+            "showResult": {
+              "type": "boolean"
+            },
+            "invitees": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "createdBy": {
+              "type": "string"
+            },
+            "duration": {
+              "type": "integer"
+            },
+            "maxMarks": {
+              "type": "integer"
+            }
+          }
+        },
+        "quizUpdateOutput": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "slug": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "showResult": {
+              "type": "boolean"
+            },
+            "isPublished": {
+              "type": "boolean"
+            },
+            "isRandomize": {
+              "type": "boolean"
+            },
+            "isProctored": {
+              "type": "boolean"
+            },
+            "invitees": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "createdBy": {
+              "type": "string"
+            },
+            "activeTime": {
+              "$ref": "#/components/schemas/activeTime"
+            }
+          }
+        },
+        "mcqresponse": {
+          "type": "object",
+          "properties": {
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string"
+            },
+            "userID": {
+              "type": "string"
+            },
+            "selectedChoice": {
+              "type": "string"
+            },
+            "quizID": {
+              "type": "integer"
+            }
+          }
+        },
+        "codingresponse": {
+          "type": "object",
+          "properties": {
+            "requestID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "userID": {
+              "type": "string"
+            },
+            "quizID": {
+              "type": "integer"
+            }
+          }
+        },
+        "codeRunResponse": {
+          "type": "object",
+          "properties": {
+            "requestID": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "response": {
+          "type": "object",
+          "properties": {
+            "mcq": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/mcqresponse"
+              }
+            },
+            "coding": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/codingresponse"
+              }
+            }
+          }
+        },
+        "userResponseOutput": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "userIdentifier": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "tabChangeCount": {
+              "type": "integer"
+            },
+            "response": {
+              "$ref": "#/components/schemas/response"
+            },
+            "evaluatedMarks": {
+              "type": "integer"
+            },
+            "startTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "submissionTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "remainingDuration": {
+              "type": "integer"
+            },
+            "quizID": {
+              "type": "integer"
+            }
+          }
+        },
+        "userResponseInput": {
+          "type": "object",
+          "properties": {
+            "userIdentifier": {
+              "type": "string"
+            },
+            "response": {
+              "$ref": "#/components/schemas/response"
+            }
+          }
+        },
+        "mcqResult": {
+          "type": "object",
+          "properties": {
+            "selectedChoice": {
+              "type": "string"
+            },
+            "isCorrect": {
+              "type": "boolean"
+            },
+            "correctChoice": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            }
+          }
+        },
+        "mcqEvaluatedResult": {
+          "type": "object",
+          "properties": {
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "question": {
+              "type": "string"
+            },
+            "choices": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "maximumMarks": {
+              "type": "integer"
+            },
+            "result": {
+              "$ref": "#/components/schemas/mcqResult"
+            }
+          }
+        },
+        "testcase": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "type": {
+              "type": "string"
+            },
+            "marks": {
+              "type": "integer"
+            },
+            "input": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string"
+            }
+          }
+        },
+        "codeCompileOutput": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "start": {
+              "type": "string"
+            },
+            "end": {
+              "type": "string"
+            },
+            "outputLines": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exitCode": {
+              "type": "integer"
+            }
+          }
+        },
+        "codeRunOutputList": {
+          "type": "object",
+          "properties": {
+            "testCaseId": {
+              "type": "integer"
+            },
+            "status": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "input": {
+              "type": "string"
+            },
+            "expectedOutput": {
+              "type": "string"
+            },
+            "start": {
+              "type": "string"
+            },
+            "end": {
+              "type": "string"
+            },
+            "memoryConsumed": {
+              "type": "integer"
+            },
+            "outputLines": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exitCode": {
+              "type": "integer"
+            },
+            "duration": {
+              "type": "integer"
+            },
+            "reasonForFailure": {
+              "type": "string"
+            }
+          }
+        },
+        "codingResult": {
+          "type": "object",
+          "properties": {
+            "marks": {
+              "type": "number"
+            },
+            "totalTestcases": {
+              "type": "integer"
+            },
+            "testcasesPassed": {
+              "type": "integer"
+            },
+            "testcasesPending": {
+              "type": "integer"
+            }
+          }
+        },
+        "compilationOutput": {
+          "type": "object",
+          "properties": {
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "status": {
+              "type": "string"
+            },
+            "codeCompileOutput": {
+              "$ref": "#/components/schemas/codeCompileOutput"
+            },
+            "codeRunOutputList": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/codeRunOutputList"
+              }
+            },
+            "result": {
+              "$ref": "#/components/schemas/codingResult"
+            }
+          }
+        },
+        "codingEvaluatedResult": {
+          "type": "object",
+          "properties": {
+            "questionID": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "code": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "question": {
+              "type": "string"
+            },
+            "compilationOutput": {
+              "$ref": "#/components/schemas/compilationOutput"
+            },
+            "testcases": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/testcase"
+              }
+            },
+            "maximumMarks": {
+              "type": "integer"
+            },
+            "result": {
+              "$ref": "#/components/schemas/codingResult"
+            }
+          }
+        },
+        "evaluatedResult": {
+          "type": "object",
+          "properties": {
+            "mcq": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/mcqEvaluatedResult"
+              }
+            },
+            "coding": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/codingEvaluatedResult"
+              }
+            }
+          }
+        },
+        "userInput": {
+          "type": "object",
+          "properties": {
+            "accessCode": {
+              "type": "string"
+            }
+          }
+        },
+        "userOutput": {
+          "type": "object",
+          "properties": {
+            "given_name": {
+              "type": "string"
+            },
+            "family_name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "token": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "picture": {
+              "type": "string"
+            }
+          }
+        },
+        "guestUserInput": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            }
+          }
+        },
+        "guestUserOutput": {
+          "type": "object",
+          "properties": {
+            "username": {
+              "type": "string"
+            },
+            "userID": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "userResultOutput": {
+          "type": "object",
+          "properties": {
+            "quizID": {
+              "type": "integer"
+            },
+            "userIdentifier": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "tabChangeCount": {
+              "type": "integer"
+            },
+            "evaluatedResult": {
+              "$ref": "#/components/schemas/evaluatedResult"
+            },
+            "evaluatedMarks": {
+              "type": "integer"
+            },
+            "maxMarks": {
+              "type": "integer"
+            }
+          }
+        },
+        "quizUsersOutput": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/quizUserResponse"
+              }
+            },
+            "totalCount": {
+              "type": "integer"
+            }
+          }
+        },
+        "quizUserResponse": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "startTime": {
+              "type": "string"
+            },
+            "endTime": {
+              "type": "string"
+            },
+            "tabChangeCount": {
+              "type": "integer"
+            },
+            "status": {
+              "type": "string"
+            },
+            "streamCredentials": {
+              "type": "string"
+            }
+          }
+        },
+        "candidateKey": {
+          "type": "object",
+          "properties": {
+            "candidate": {
+              "type": "string"
+            },
+            "sdpMLineIndex": {
+              "type": "integer"
+            },
+            "sdpMid": {
+              "type": "string"
+            }
+          }
+        },
+        "offer": {
+          "type": "object",
+          "properties": {
+            "sdp": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "userCreds": {
+          "type": "object",
+          "properties": {
+            "offer": {
+              "$ref": "#/components/schemas/offer"
+            },
+            "candidates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/candidateKey"
+              }
+            }
+          }
+        },
+        "adminCreds": {
+          "type": "object",
+          "properties": {
+            "answer": {
+              "$ref": "#/components/schemas/offer"
+            },
+            "candidates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/candidateKey"
+              }
+            }
+          }
+        },
+        "compilationRequest": {
+          "type": "object",
+          "properties": {
+            "className": {
+              "type": "string"
+            },
+            "fullCode": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "testCases": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/testcase"
+              }
+            }
+          }
+        },
+        "id_uploadcsv_body": {
+          "type": "object",
+          "properties": {
+            "mcqQuestions": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        },
+        "rid_question_body": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/mcqresponse"
+            },
+            {
+              "$ref": "#/components/schemas/codingresponse"
+            }
+          ]
+        }
+      },
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer"
+        }
+      }
+    }
+  }
